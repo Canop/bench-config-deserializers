@@ -1,106 +1,86 @@
-mod thing;
+mod durations;
 mod random;
+mod thing;
 
 use {
+    durations::*,
     pretty_assertions::assert_eq,
-    rand::{
-        prelude::*,
-    },
-    std::time::{Instant, Duration},
+    rand::prelude::*,
+    std::time::Instant,
     thing::*,
 };
 
-#[derive(Debug, Default)]
-struct Durations {
-    pub serde_json: Duration,
-    pub deser_hjson: Duration,
-    pub sonic_rs: Duration,
-    pub json5: Duration,
-    pub toml: Duration,
-}
+fn compute(
+    seed: u64,
+    verbose: bool,
+) -> Durations {
+    let mut durations = Durations::default();
+    let mut rng = StdRng::seed_from_u64(seed);
+    let thing = Thing::new(&mut rng);
 
-impl Durations {
-    pub fn compute(thing: &Thing, verbose: bool) -> Self {
-        let json = serde_json::to_string_pretty(&thing).unwrap();
-        if verbose {
-            //println!("JSON:\n{}", &json);
-            println!("pretty JSON length: {} bytes", json.len());
-        }
-
-        let start = Instant::now();
-        let c: Thing = serde_json::from_str(&json).unwrap();
-        let serde_json = start.elapsed();
-        assert_eq!(thing, &c);
-
-        let start = Instant::now();
-        let c: Thing = deser_hjson::from_str(&json).unwrap();
-        let deser_hjson = start.elapsed();
-        assert_eq!(thing, &c);
-
-        let start = Instant::now();
-        let c: Thing = sonic_rs::from_str(&json).unwrap();
-        let sonic_rs = start.elapsed();
-        assert_eq!(thing, &c);
-
-        let start = Instant::now();
-        let c: Thing = json5::from_str(&json).unwrap();
-        let json5 = start.elapsed();
-        assert_eq!(thing, &c);
-
-        let toml = toml::to_string(&thing).unwrap();
-        if verbose {
-            println!("TOML length: {} bytes", toml.len());
-        }
-
-        let start = Instant::now();
-        let c: Thing = toml::from_str(&toml).unwrap();
-        let toml = start.elapsed();
-        assert_eq!(thing, &c);
-
-        Self { deser_hjson, serde_json, sonic_rs, json5, toml }
+    let json = serde_json::to_string_pretty(&thing).unwrap();
+    if verbose {
+        //println!("JSON:\n{}", &json);
+        println!("pretty JSON length: {} bytes", json.len());
     }
-    /// use all values, thus ensuring their computation
-    /// isn't optimized out
-    pub fn check(&self) {
-        assert!(self.serde_json.as_nanos() > 0);
-        assert!(self.deser_hjson.as_nanos() > 0);
-        assert!(self.sonic_rs.as_nanos() > 0);
-        assert!(self.json5.as_nanos() > 0);
-        assert!(self.toml.as_nanos() > 0);
+    let toml = toml::to_string(&thing).unwrap();
+    if verbose {
+        println!("TOML length: {} bytes", toml.len());
     }
-    pub fn deser_hjson_ratio(&self) -> f32 {
-        (self.deser_hjson.as_nanos() as f32) / (self.serde_json.as_nanos() as f32)
+    let yaml = serde_yaml::to_string(&thing).unwrap();
+    if verbose {
+        println!("YAML length: {} bytes", yaml.len());
     }
-    pub fn sum(samples: &[Self]) -> Self {
-        let mut sum = Durations::default();
-        for sample in samples {
-            sum.serde_json += sample.serde_json;
-            sum.deser_hjson += sample.deser_hjson;
-            sum.sonic_rs += sample.sonic_rs;
-            sum.json5 += sample.json5;
-            sum.toml += sample.toml;
-        }
-        sum
-    }
+
+    let start = Instant::now();
+    let c: Thing = serde_json::from_str(&json).unwrap();
+    durations.add("serde_json", start, json.len());
+    assert_eq!(thing, c);
+
+    let start = Instant::now();
+    let c: Thing = sonic_rs::from_str(&json).unwrap();
+    durations.add("sonic-rs", start, json.len());
+    assert_eq!(thing, c);
+
+    let start = Instant::now();
+    let c: Thing = deser_hjson::from_str(&json).unwrap();
+    durations.add("deser-hjson", start, json.len());
+    assert_eq!(thing, c);
+
+    let start = Instant::now();
+    let c: Thing = json5::from_str(&json).unwrap();
+    durations.add("json5", start, json.len());
+    assert_eq!(thing, c);
+
+    let start = Instant::now();
+    let c: Thing = toml::from_str(&toml).unwrap();
+    durations.add("toml", start, toml.len());
+    assert_eq!(thing, c);
+
+    let start = Instant::now();
+    let c: Thing = serde_yaml::from_str(&yaml).unwrap();
+    durations.add("serde_yaml", start, yaml.len());
+    assert_eq!(thing, c);
+
+    durations
 }
 
 fn main() {
-    let mut rng = StdRng::seed_from_u64(0);
-    let thing = Thing::new(&mut rng);
-
-    println!("warming...");
-    let durations = Durations::compute(&thing, true);
+    let durations = compute(0, true);
     durations.check();
+    println!("warming...");
+    for i in 0..5 {
+        let durations = compute(i, false);
+        durations.check();
+    }
 
     let samples: Vec<Durations> = (1..=10)
         .map(|i| {
             println!("{i}...");
-            Durations::compute(&thing, false)
+            compute(i, false)
         })
         .collect();
-    println!("\ndone");
+    println!("...done");
     let durations = Durations::sum(&samples);
-    dbg!(&durations);
-    durations.check();
-    println!("deser_hjson / serde_json : {:.1}%", (durations.deser_hjson_ratio() * 100.0));
+    durations.print();
 }

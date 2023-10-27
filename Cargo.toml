@@ -1,16 +1,17 @@
 [package]
-name = "bench-deserialization"
+name = "bench-config-deserializers"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-deser-hjson = { path = "../deser-hjson" }
-#deser-hjson = "2.1"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-sonic-rs = { version = "0.1" }
-rand = { version ="0.8", features = ["std_rng"] }
-pretty_assertions = "1.4"
-lazy_static = "1.4.0"
-toml = "0.8"
+deser-hjson = "2.2.1"
 json5 = "0.4"
+lazy_static = "1.4.0"
+pretty_assertions = "1.4"
+rand = { version ="0.8", features = ["std_rng"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version ="1.0", features = ["float_roundtrip"] }
+serde_yaml = "0.9"
+sonic-rs = { version = "0.1", features = ["utf8"] }
+termimad = "0.25.5"
+toml = "0.8"

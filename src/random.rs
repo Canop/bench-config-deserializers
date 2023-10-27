@@ -1,4 +1,3 @@
-
 use {
     lazy_static::*,
     rand::{
@@ -12,7 +11,10 @@ pub fn rand_string<R: Rng>(r: &mut R) -> String {
     rand_string_of_len(r, len)
 }
 
-pub fn rand_string_of_len<R: Rng>(r: &mut R, len: usize) -> String {
+pub fn rand_string_of_len<R: Rng>(
+    r: &mut R,
+    len: usize,
+) -> String {
     r.sample_iter(&Alphanumeric)
         .take(len)
         .map(char::from)
@@ -20,13 +22,15 @@ pub fn rand_string_of_len<R: Rng>(r: &mut R, len: usize) -> String {
 }
 
 lazy_static! {
-    static ref CHARSET: Vec<char> = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 îä\t\nabcdefgh"
-        .chars()
-        .collect();
+    static ref CHARSET: Vec<char> =
+        "这个大象有多重ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 îä\t\nabcdefgh"
+            .chars()
+            .collect();
 }
+
 pub fn rand_text<R: Rng>(r: &mut R) -> String {
     let len = r.gen_range(3..25) * r.gen_range(8..25);
-    std::iter::repeat_with(
-        || CHARSET[r.gen_range(0..CHARSET.len())]
-    ).take(len).collect()
+    std::iter::repeat_with(|| CHARSET[r.gen_range(0..CHARSET.len())])
+        .take(len)
+        .collect()
 }
