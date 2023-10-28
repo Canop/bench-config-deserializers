@@ -1,6 +1,7 @@
 
 This program compares the time some [serde](https://serde.rs/) deserializers take to deserialize some string into a configuration-like struct deriving `Deserialize`.
-The benchmarker also checks the correct round-trip by checking equality of the deserialized config with the source struct.
+
+The benchmarker also checks the correct round-trip by checking equality of the deserialized config with the source struct (this involves enabling the `float_roundtrip` feature for serde_json).
 
 A configuration file needs comments, and needs to be convenient enough to be written by humans.
 For those reasons, JSON isn't suitable, so this benchmark is really dedicated to [Hjson](https://hjson.github.io/), [JSON5](https://json5.org/), [YAML](https://en.wikipedia.org/wiki/YAML), and [TOML](https://toml.io/). For a deeper discussion regarding the choice of a configuration format, read [this blog post about configuration formats](https://dystroy.org/blog/hjson-in-broot/)).
@@ -17,7 +18,22 @@ The [toml](https://docs.rs/toml/) deserializer is tested with the same struct, b
 The [serde_yaml](https://docs.rs/serde_yaml/) deserializer is tested with the same struct, but encoded in a YAML string.
 
 The struct used in this bench is bigger than usual configuration files but otherwise should be quite alike usual configurations.
+It is generated 10 times with different random seeds.
 
+Here are the results I get on my computer:
+
+    Fastest deserializer: serde_json
+    ┌────────────┬─────────────┬─────────────────┬──────────┐
+    │deserializer│sum durations│diff with fastest│throughput│
+    ├────────────┼─────────────┼─────────────────┼──────────┤
+    │ serde_json │  37.560974ms│              +0%│  528 Mb/s│
+    │  sonic-rs  │  52.520303ms│             +40%│  378 Mb/s│
+    │deser-hjson │  93.526901ms│            +149%│  212 Mb/s│
+    │   json5    │ 856.816829ms│           +2181%│   23 Mb/s│
+    │    toml    │  437.05607ms│           +1064%│   31 Mb/s│
+    │ serde_yaml │ 314.404333ms│            +737%│   48 Mb/s│
+    └────────────┴─────────────┴─────────────────┴──────────┘
+    (a smaller "diff with fastest" is better)
 
 To test the benchmark yourself with your hardware, use
 
