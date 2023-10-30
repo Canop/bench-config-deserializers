@@ -26,12 +26,12 @@ Here are the results I get on my computer:
     ┌────────────┬─────────────┬─────────────────┬──────────┐
     │deserializer│sum durations│diff with fastest│throughput│
     ├────────────┼─────────────┼─────────────────┼──────────┤
-    │ serde_json │  37.560974ms│              +0%│  528 Mb/s│
-    │  sonic-rs  │  52.520303ms│             +40%│  378 Mb/s│
-    │deser-hjson │  93.526901ms│            +149%│  212 Mb/s│
-    │   json5    │ 856.816829ms│           +2181%│   23 Mb/s│
-    │    toml    │  437.05607ms│           +1064%│   31 Mb/s│
-    │ serde_yaml │ 314.404333ms│            +737%│   48 Mb/s│
+    │ serde_json │  38.061465ms│              +0%│  521 Mb/s│
+    │  sonic-rs  │  45.537732ms│             +20%│  436 Mb/s│
+    │deser-hjson │   87.78362ms│            +131%│  226 Mb/s│
+    │   json5    │ 817.185345ms│           +2047%│   24 Mb/s│
+    │    toml    │ 436.907208ms│           +1048%│   31 Mb/s│
+    │ serde_yaml │ 321.301263ms│            +744%│   47 Mb/s│
     └────────────┴─────────────┴─────────────────┴──────────┘
     (a smaller "diff with fastest" is better)
 
