@@ -12,13 +12,12 @@ use {
 static TEMPLATE: &str = r#"
 Fastest deserializer: **${fastest}**
 |:-:|:-:|:-:|
-|**deserializer**|**sum durations**|**diff with fastest**|**throughput**|
+|**crate**|**sum durations**|**diff with fastest**|**throughput**|
 |:-:|-:|-:|-:|
 ${entry
 |${name}|${duration}|**${diff}**|${throughput}|
 }
 |:-:|-:|-:|-:|
-*(a smaller "diff with fastest" is better)*
 "#;
 
 #[derive(Debug, Clone)]
@@ -113,10 +112,11 @@ impl Durations {
     pub fn fastest(&self) -> &Entry {
         self.entries.iter().min_by_key(|e| e.duration).unwrap()
     }
-    pub fn print(&self) {
+    pub fn print(mut self) {
+        self.entries.sort_by_key(|e| e.duration);
         let skin = MadSkin::default();
-        let fastest = self.fastest();
         let mut expander = OwningTemplateExpander::new();
+        let fastest = self.fastest();
         expander.set("fastest", fastest.name);
         for entry in &self.entries {
             expander

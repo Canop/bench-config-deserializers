@@ -58,6 +58,11 @@ fn compute(
     assert_eq!(thing, c);
 
     let start = Instant::now();
+    let c: Thing = basic_toml::from_str(&toml).unwrap();
+    durations.add("basic-toml", start, toml.len());
+    assert_eq!(thing, c);
+
+    let start = Instant::now();
     let c: Thing = serde_yaml::from_str(&yaml).unwrap();
     durations.add("serde_yaml", start, yaml.len());
     assert_eq!(thing, c);
@@ -69,7 +74,7 @@ fn main() {
     let durations = compute(0, true);
     durations.check();
     println!("warming...");
-    for i in 0..5 {
+    for i in 0..10 {
         let durations = compute(i, false);
         durations.check();
     }

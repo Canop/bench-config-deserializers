@@ -74,10 +74,10 @@ pub static CONDITIONS: &[Condition] = &[
 
 impl Thing {
     pub fn new<R: Rng>(mut r: R) -> Self {
-        let var_things = (0..r.gen_range(1400..1500))
+        let var_things = (0..r.gen_range(1300..1600))
             .map(|_| VarThing::new(&mut r))
             .collect();
-        let stuff = (0..r.gen_range(1500..1800))
+        let stuff = (0..r.gen_range(1500..1900))
             .map(|_| (rand_string(&mut r), Stuff::new(&mut r)))
             .collect();
         let bidules = (0..r.gen_range(1500..2000))

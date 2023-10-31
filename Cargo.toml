@@ -1,9 +1,16 @@
 [package]
 name = "bench-config-deserializers"
-version = "0.1.0"
+authors = ["dystroy <denys.seguret@gmail.com>"]
+repository = "https://github.com/Canop/bench-config-deserializers"
+version = "0.2.0"
 edition = "2021"
+license = "MIT"
+categories = ["development-tools"] # unsure
+readme = "README.md"
+rust-version = "1.65"
 
 [dependencies]
+basic-toml = "0.1"
 deser-hjson = "2.2.1"
 json5 = "0.4"
 lazy_static = "1.4.0"
@@ -15,3 +22,6 @@ serde_yaml = "0.9"
 sonic-rs = { version = "0.2.2" }
 termimad = "0.25.5"
 toml = "0.8"
+
+[profile.release]
+lto = true
