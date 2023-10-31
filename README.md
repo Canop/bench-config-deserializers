@@ -6,16 +6,16 @@ This program compares the time some [serde](https://serde.rs/) deserializers tak
 The benchmarker also checks the correct round-trip by checking equality of the deserialized config with the source struct (this involves enabling the `float_roundtrip` feature for serde_json).
 
 A configuration file needs comments, and needs to be convenient enough to be written by humans.
-For those reasons, JSON isn't suitable, so this benchmark is really dedicated to [Hjson](https://hjson.github.io/), [JSON5](https://json5.org/), [YAML](https://en.wikipedia.org/wiki/YAML), and [TOML](https://toml.io/). For a deeper discussion regarding the choice of a configuration format, read [this blog post about configuration formats](https://dystroy.org/blog/hjson-in-broot/)).
+For those reasons, JSON isn't suitable, so this benchmark is really dedicated to [Hjson](https://hjson.github.io/), [JSON5](https://json5.org/), [YAML](https://en.wikipedia.org/wiki/YAML), and [TOML](https://toml.io/). For a deeper discussion regarding the choice of a configuration format, read [this blog post about configuration formats](https://dystroy.org/blog/hjson-in-broot/).
 
 The struct used in this bench is bigger than usual configuration files but otherwise should be quite alike usual configurations.
 It is generated 10 times with different random seeds, and stored in memory to avoid disk IO perturbing the measurement.
 
 ## JSON
 
-JSON is a subset of both Hjson and JSON5, that's why a JSON file can be used to benchmark their parsers.
-
 The [serde-json](https://docs.rs/serde_json/), [deser_hjson](https://docs.rs/deser-hjson/), [sonic-rs](https://docs.rs/sonic-rs/), and [json5](https://docs.rs/json5) deserializers are measured with the same JSON file built by serde_json with `to_string_pretty`.
+
+JSON is a subset of both Hjson and JSON5, that's why a JSON file can be used to benchmark their parsers.
 
 serde_json and sonic_rs are advantaged here, because they don't need to test for meany things you'd normally find in configurations: comments, multi-line texts, alternate ways to write data.
 They're still interesting as reference points for other deserializers as long as you remember they're not exactly doing the same work.
