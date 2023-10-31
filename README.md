@@ -13,6 +13,8 @@ It is generated 10 times with different random seeds, and stored in memory to av
 
 ## JSON
 
+JSON is a subset of both Hjson and JSON5, that's why a JSON file can be used to benchmark their parsers.
+
 The [serde-json](https://docs.rs/serde_json/), [deser_hjson](https://docs.rs/deser-hjson/), [sonic-rs](https://docs.rs/sonic-rs/), and [json5](https://docs.rs/json5) deserializers are measured with the same JSON file built by serde_json with `to_string_pretty`.
 
 serde_json and sonic_rs are advantaged here, because they don't need to test for meany things you'd normally find in configurations: comments, multi-line texts, alternate ways to write data.
